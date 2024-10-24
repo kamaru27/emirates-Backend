@@ -76,27 +76,6 @@ export const getAllProducts = async (req, res, next) => {
       },
       {
         $lookup: {
-          from: SubCategoryModel.modelName,
-          localField: 'subCategory',
-          foreignField: '_id',
-          pipeline: [
-            {
-              $match: {
-                deletedAt: null,
-              },
-            },
-            {
-              $project: {
-                _id: 1,
-                name: 1,
-              },
-            },
-          ],
-          as: 'subCategory',
-        },
-      },
-      {
-        $lookup: {
           from: CategoryModel.modelName,
           localField: 'category',
           foreignField: '_id',
@@ -117,20 +96,43 @@ export const getAllProducts = async (req, res, next) => {
         },
       },
       {
-        $unwind: {
-          path:'$brand',
-          preserveNullAndEmptyArrays:true
+        $lookup: {
+          from: SubCategoryModel.modelName,
+          localField: 'subCategory',
+          foreignField: '_id',
+          pipeline: [
+            {
+              $match: {
+                deletedAt: null,
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+              },
+            },
+          ],
+          as: 'subCategory',
         },
       },
       {
         $unwind: {
-          path:'$category',
-        preserveNullAndEmptyArrays:true},
+          path: '$brand',
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $unwind: {
-          path:'$subCategory',
-        preserveNullAndEmptyArrays:true},
+          path: '$category',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: '$subCategory',
+          preserveNullAndEmptyArrays: true, 
+        },
       },
       {
         $sort: {
@@ -150,6 +152,9 @@ export const getAllProducts = async (req, res, next) => {
         },
       },
     ]);
+    
+    console.log(products);
+    
 
 console.log('first',products)
 
